@@ -16,12 +16,11 @@
 
 .expense-item__description {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 1rem;
-    align-items: flex-end;
-    flex-flow: column-reverse;
-    justify-content: flex-start;
-    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .expense-item h2 {

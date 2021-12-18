@@ -1,49 +1,52 @@
 import './App.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Expenses from './components/Expense/Expenses';
 import NewExpense from './components/NewExpense/NewExpense';
-
-const INITIAL_EXPENSES = [
-  {
-    id: 'e1',
-    title: 'Toilet Paper',
-    amount: 24.12,
-    date: new Date(2020, 7, 14),
-  },
-  {
-    id: 'e2',
-    title: 'New TV',
-    amount: 799.49,
-    date: new Date(2021, 2, 12),
-  },
-  {
-    id: 'e3',
-    title: 'Cable Internet',
-    amount: 94.67,
-    date: new Date(2021, 2, 28),
-  },
-  {
-    id: 'e4',
-    title: 'New Desk (Wooden)',
-    amount: 450,
-    date: new Date(2021, 5, 12),
-  },
-];
+import { apiUrl } from './AppSettings';
 
 const App = () => {
-  const [expenses, setExpenses] = useState(INITIAL_EXPENSES);
+  const [error, setError] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [expenses, setExpenses] = useState([]);
+
+  useEffect(() => {
+    fetch(apiUrl + '/expenses')
+      .then((res) => res.json())
+      .then(
+        (results) => {
+          setIsLoaded(true);
+          const formattedResults = results.map((result) => ({
+            id: result.id,
+            title: result.title,
+            amount: result.amount,
+            date: new Date(result.date),
+          }));
+          setExpenses(formattedResults);
+        },
+        (error) => {
+          setIsLoaded(true);
+          setError(error);
+        }
+      );
+  }, []);
 
   const addExpenseHandler = (expenseData) => {
     setExpenses((prevExpenses) => [expenseData, ...prevExpenses]);
     console.log(expenses);
   };
 
-  return (
-    <div>
-      <NewExpense onAddExpense={addExpenseHandler} />
-      <Expenses expenses={expenses} />
-    </div>
-  );
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  } else if (!isLoaded) {
+    return <div>Loading...</div>;
+  } else {
+    return (
+      <div>
+        <NewExpense onAddExpense={addExpenseHandler} />
+        <Expenses expenses={expenses} />
+      </div>
+    );
+  }
 };
 
 export default App;

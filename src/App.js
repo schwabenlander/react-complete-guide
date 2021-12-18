@@ -32,13 +32,16 @@ const App = () => {
 
   const addExpenseHandler = (expenseData) => {
     setExpenses((prevExpenses) => [expenseData, ...prevExpenses]);
-    console.log(expenses);
   };
 
   if (error) {
     return <div>Error: {error.message}</div>;
   } else if (!isLoaded) {
-    return <div>Loading...</div>;
+    return (
+      <div className="loading">
+        <div className="lds-dual-ring"></div>
+      </div>
+    );
   } else {
     return (
       <div>
